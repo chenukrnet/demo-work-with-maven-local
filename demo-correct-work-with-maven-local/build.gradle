@@ -1,8 +1,13 @@
 plugins{
     id 'java'
+    id 'application'
 }
 group = 'com.home.gradle'
 version = '0.0.1-SNAPSHOT'
+
+application{
+    mainClassName='com.home.gradle.gradleprojectstructure.MyLib'
+}
 
 //Создаем новый пользовательский атрибут
 def mavenLocalEnabler = Attribute.of("my.maven.loal.enabler", Boolean)
@@ -70,3 +75,5 @@ dependencies {
     implementation 'org.example.demo.gradle.local-lib:demo-local-lib:1.0-SNAPSHOT'
 }
 
+//--project-prop mavenLocal=true эквивалент
+//gradle -PmavenLocal=true build
