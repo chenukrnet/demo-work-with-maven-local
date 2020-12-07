@@ -1,0 +1,8 @@
+rootProject.name = 'demo-correct-work-with-maven-local'
+// К сожалению в идею не потяно куда пихнуть параметры запуска
+// gradle --include-build ..\demo-local-lib\ build
+// Для идеи --include-build ..\demo-local-lib\
+// ниже если надоело печатать аргументы
+//includeBuild ('..\\demo-local-lib')
+// источник https://www.youtube.com/watch?v=l96SMQX3zkU
+//https://docs.gradle.org/current/userguide/composite_builds.html#command_line_composite

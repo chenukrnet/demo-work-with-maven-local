@@ -1,4 +1,0 @@
-rootProject.name = 'demo-work-with-maven-local'
-include 'demo-local-lib'
-include 'demo-correct-work-with-maven-local'
-
