@@ -1,0 +1,72 @@
+plugins{
+    id 'java'
+}
+group = 'com.home.gradle'
+version = '0.0.1-SNAPSHOT'
+
+//Создаем новый пользовательский атрибут
+def mavenLocalEnabler = Attribute.of("my.maven.loal.enabler", Boolean)
+dependencies.attributesSchema {
+    attribute(mavenLocalEnabler)
+}
+
+//тут мы объявляем значение для атрибута и заполняем его.
+//К сожалению идея такие опции передать корректно пока что не может
+//Если кто то сможет - прошу описать, тч пока +- рабочий вариант через задание переменных в системе
+def mavenLocalEnablerValue=false //gradle build -PmavenLocal='true' билд пройдет только так
+if (project.hasProperty('mavenLocal')) {
+    mavenLocalEnablerValue = Boolean.valueOf((String)project.property('mavenLocal'))
+}
+
+// Нужно сконфигурировать все 3 (мы добавляем атрибут к конфигурации)
+configurations {
+    compileClasspath {
+        attributes {
+            attribute(mavenLocalEnabler, mavenLocalEnablerValue)
+        }
+    }
+    runtimeClasspath {
+        attributes {
+            attribute(mavenLocalEnabler, mavenLocalEnablerValue)
+        }
+    }
+    testRuntimeClasspath {
+        attributes {
+            attribute(mavenLocalEnabler, mavenLocalEnablerValue)
+        }
+    }
+}
+
+repositories { // Блок репозиториев позволяет задать какие именно репозитории будут использованы
+
+    mavenLocal() {
+        mavenContent {
+            snapshotsOnly()//Если локально мы ставим только -SNAPHOT версии то при наличии постоянного доступа
+            // к удаленному репозиторию логика из этого примера может быть избыточной, тк. gradle никогда не верит
+            // снапшотам и всегда будет лезть проверять их хеш на отличие в удаленный репозиторий
+        }
+        content {
+            // Если указано что включать то включено будет только это из всех зависимостей
+            includeGroup("org.example.demo.gradle.local-lib")
+            onlyForAttribute(mavenLocalEnabler, true)// наш волшебный выключатель
+        }
+
+    }
+    mavenCentral()
+    //репозиторий указан не по рекомендации, но иначе будет брать из удаленного при совпадении версий
+    //например для -SNAPHOT
+    //соображения gradle https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven-local
+    /**
+     * 1) для мавена это кеш
+     * 2) gradle не доверяет зависимостям из этого репозитория
+     * 3) сборка будет более медленной
+     */
+    //Альтернативные решения поднять https://hub.docker.com/r/sonatype/nexus3 для целей тестирования
+}
+
+
+
+dependencies {
+    implementation 'org.example.demo.gradle.local-lib:demo-local-lib:1.0-SNAPSHOT'
+}
+
